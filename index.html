@@ -175,7 +175,7 @@
 
 <script>
 const scenes = [
-    "You were wearing a black jacket and black jeans.\nCalm. Quiet. Fearless.",
+    "I was wearing a black jacket and black jeans.\nCalm. Quiet. Fearless.\nOh!! Bold as well.",
     "And then there he was…\nStanding near the bus stand.\nHands folded.",
     "A black racer bike beside him.\nThat quiet confidence.",
     "The night stayed silent.\nBut somehow… everything felt loud.",
@@ -245,7 +245,7 @@ function typeWriter(text, i=0){
         if(text.charAt(i) === "\n") sceneDiv.innerHTML += "<br>";
         else sceneDiv.innerHTML += text.charAt(i);
 
-        setTimeout(()=>typeWriter(text, i+1), 50);
+        setTimeout(()=>typeWriter(text, i+1), 100);
     } else {
         clearInterval(typeInterval);
         isTyping = false;
@@ -269,7 +269,7 @@ overlay.onclick = function(){
     nextBtn.style.display = "inline-block";
 
     // Play music starting at 30s
-    music.currentTime = 5;
+    music.currentTime = 1;
     music.volume = 0.4;
     music.play().catch(e=>console.log(e));
 
