@@ -2,15 +2,19 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>The Night We Met</title>
 <style>
     body {
         margin: 0;
         height: 100vh;
         background: radial-gradient(circle at top, #111 0%, #000 70%);
-        font-family: Georgia, serif;
+        font-family: 'Georgia', serif;
         color: #f5f5f5;
         overflow: hidden;
+        display: flex;
+        align-items: center;
+        justify-content: center;
     }
 
     .stars {
@@ -21,6 +25,7 @@
         opacity: 0.35;
         animation: twinkle 6s infinite alternate;
         pointer-events: none;
+        z-index: 1;
     }
 
     @keyframes twinkle {
@@ -30,11 +35,9 @@
 
     .container {
         position: relative;
-        z-index: 2;
+        z-index: 10;
         max-width: 720px;
-        margin: auto;
-        top: 50%;
-        transform: translateY(-50%);
+        width: 90%;
         text-align: center;
         padding: 20px;
     }
@@ -43,8 +46,9 @@
         font-size: 1.35rem;
         line-height: 1.9;
         white-space: pre-line;
+        min-height: 150px; /* Prevents layout jump */
         opacity: 0;
-        transition: opacity 1s ease;
+        transition: opacity 0.8s ease-in-out;
     }
 
     .text.show {
@@ -61,6 +65,7 @@
         font-size: 1rem;
         cursor: pointer;
         transition: all 0.3s ease;
+        display: none; /* Hidden until overlay is clicked */
     }
 
     button:hover {
@@ -76,6 +81,7 @@
         animation: floatUp linear infinite;
         opacity: 0.8;
         pointer-events: none;
+        z-index: 5;
     }
 
     @keyframes floatUp {
@@ -83,7 +89,6 @@
         to { transform: translateY(-120vh) rotate(360deg); opacity: 1; }
     }
 
-    /* Overlay styles */
     #overlay {
         position: fixed;
         inset: 0;
@@ -98,7 +103,8 @@
         cursor: pointer;
         text-align: center;
     }
-    #overlay h1 { margin-bottom: 20px; }
+    #overlay h1 { margin-bottom: 20px; font-size: 1.8rem; }
+    #overlay p { font-size: 1rem; color: #ccc; }
 </style>
 </head>
 <body>
@@ -106,18 +112,14 @@
 <div class="stars"></div>
 
 <div class="container">
-    <div id="scene" class="text">
-        <!-- First scene appears after click -->
-    </div>
+    <div id="scene" class="text"></div>
     <button id="nextBtn">Next</button>
 </div>
 
-<!-- Background Music -->
 <audio id="bgMusic" loop preload="auto">
     <source src="bgMusic.mp3" type="audio/mpeg">
 </audio>
 
-<!-- Click overlay -->
 <div id="overlay">
     <h1>Click anywhere to start the night…</h1>
     <p>Music will play automatically</p>
@@ -125,66 +127,65 @@
 
 <script>
 const scenes = [
-"You were wearing a black jacket and black jeans.\nCalm. Quiet. Fearless.",
-"And then there he was…\nStanding near the bus stand.\nHands folded.",
-"A black racer bike beside him.\nThat quiet confidence.",
-"The night stayed silent.\nBut somehow… everything felt loud.",
-"He stepped closer and said:\n\"Hey, I brought you something.\"",
-"Three red roses. 🌹🌹🌹",
-"At 1 AM.\nIn the dark.\nAt a bus stand.",
-"The night didn’t know it was special.",
-"But we did.",
-"That was the beginning.\nA memory that still feels warm."
+    "You were wearing a black jacket and black jeans.\nCalm. Quiet. Fearless.",
+    "And then there he was…\nStanding near the bus stand.\nHands folded.",
+    "A black racer bike beside him.\nThat quiet confidence.",
+    "The night stayed silent.\nBut somehow… everything felt loud.",
+    "He stepped closer and said:\n\"Hey, I brought you something.\"",
+    "Three red roses. 🌹🌹🌹",
+    "At 1 AM.\nIn the dark.\nAt a bus stand.",
+    "The night didn’t know it was special.",
+    "But we did.",
+    "That was the beginning.\nA memory that still feels warm."
 ];
 
 let index = 0;
-let musicStarted = false;
-
-const scene = document.getElementById("scene");
+const sceneElement = document.getElementById("scene");
 const button = document.getElementById("nextBtn");
 const music = document.getElementById("bgMusic");
 const overlay = document.getElementById("overlay");
 
-// Overlay click -> start everything
+// Function to update text with a fade effect
+function updateScene() {
+    sceneElement.classList.remove("show");
+    
+    setTimeout(() => {
+        sceneElement.innerText = scenes[index];
+        sceneElement.classList.add("show");
+    }, 400); // Wait for fade out before changing text
+}
+
+// Start Interaction
 overlay.addEventListener("click", () => {
     overlay.style.display = "none";
+    button.style.display = "inline-block"; // Show button now
 
     // Play music
-    if (!musicStarted) {
-        music.volume = 0.4;
-        music.play().catch(err => console.log("Autoplay blocked", err));
-        musicStarted = true;
-    }
+    music.volume = 0.4;
+    music.play().catch(err => console.log("Music issue:", err));
 
-    // Show first scene correctly
-    scene.style.opacity = 0;
-    scene.innerText = scenes[index];
-
-    // Small delay to trigger transition
-    setTimeout(() => {
-        scene.classList.add("show");
-    }, 50);
+    // Show the first scene immediately
+    sceneElement.innerText = scenes[index];
+    sceneElement.classList.add("show");
 });
 
-// Next button click
+// Next Button logic
 button.addEventListener("click", () => {
     index++;
     if (index < scenes.length) {
-        scene.classList.remove("show");
-        setTimeout(() => {
-            scene.innerText = scenes[index];
-            scene.classList.add("show");
-        }, 300);
+        updateScene();
     } else {
         button.style.display = "none";
-        scene.innerText =
-"And if fate asks me again…\nI’d still meet you.\nSame night. Same darkness. Same roses. ❤️";
-        scene.classList.add("show");
-        releaseRoses();
+        sceneElement.classList.remove("show");
+        
+        setTimeout(() => {
+            sceneElement.innerText = "And if fate asks me again…\nI’d still meet you.\nSame night. Same darkness. Same roses. ❤️";
+            sceneElement.classList.add("show");
+            releaseRoses();
+        }, 400);
     }
 });
 
-// Rose animation
 function releaseRoses() {
     for (let i = 0; i < 20; i++) {
         const rose = document.createElement("div");
@@ -192,6 +193,7 @@ function releaseRoses() {
         rose.innerText = "🌹";
         rose.style.left = Math.random() * 100 + "vw";
         rose.style.animationDuration = (4 + Math.random() * 4) + "s";
+        rose.style.delay = Math.random() * 2 + "s";
         document.body.appendChild(rose);
     }
 }
