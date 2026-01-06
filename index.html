@@ -17,7 +17,6 @@
         justify-content: center;
         text-align: center;
         background: linear-gradient(to bottom, #020107 0%, #13112b 100%);
-        transition: background 3s ease;
     }
 
     /* Stars */
@@ -34,6 +33,7 @@
         border-radius: 50%;
         opacity: 0.5;
         animation: shimmer var(--duration) infinite alternate;
+        transition: opacity 1s;
     }
 
     @keyframes shimmer {
@@ -67,6 +67,7 @@
         border-radius: 50%;
         box-shadow: 0 0 50px 15px rgba(254,252,215,0.3);
         z-index: 1;
+        animation: pulse 4s infinite alternate;
     }
     .moon::after {
         content:'';
@@ -75,6 +76,10 @@
         width:70px; height:70px;
         background:#020107;
         border-radius:50%;
+    }
+    @keyframes pulse {
+        from { box-shadow: 0 0 40px 10px rgba(254,252,215,0.2); }
+        to { box-shadow: 0 0 60px 20px rgba(254,252,215,0.5); }
     }
 
     /* Text container */
@@ -168,17 +173,16 @@
 
 <div class="container">
     <div id="scene"></div>
-    <button id="nextBtn">Next</button>
+    <button id="nextBtn">🌹 Keep Going 🌹</button>
 </div>
 
-<!-- Background music starting at 30s -->
 <audio id="bgMusic" loop>
     <source src="bgMusic.mp3" type="audio/mpeg">
 </audio>
 
 <script>
 const scenes = [
-    "I was wearing a black jacket and black jeans.\nCalm. Quiet.\nOh!!Bold as well.",
+    "I was wearing a black jacket and black jeans.\nCalm. Quiet. Fearless.",
     "And then there he was…\nStanding near the bus stand.\nHands folded.",
     "A black racer bike beside him.\nThat quiet confidence.",
     "The night stayed silent.\nBut somehow… everything felt loud.",
@@ -223,10 +227,10 @@ function createShootingStar() {
     setTimeout(()=>star.remove(),2000);
 }
 function startShootingStars() {
-    setInterval(()=>{ if(Math.random()<0.9) createShootingStar(); }, 800);
+    setInterval(()=>{ if(Math.random()<0.9) createShootingStar(); }, 600);
 }
 
-// Typewriter text effect (no sound)
+// Typewriter effect (clean)
 function typeWriter(text, i=0){
     if(i===0){
         sceneDiv.innerHTML = "";
@@ -253,17 +257,7 @@ function createRose(){
     setTimeout(()=>rose.remove(),7000);
 }
 
-// Background colors for night-to-dawn
-const bgColors = [
-  '#020107', '#10051a', '#2b1640', '#40306a', '#5a4a9b'
-];
-
-function updateBackground() {
-    const step = Math.min(index, bgColors.length-1);
-    document.body.style.background = `linear-gradient(to bottom, ${bgColors[step]} 0%, #13112b 100%)`;
-}
-
-// Overlay click starts everything
+// Overlay click
 overlay.onclick = function(){
     overlay.style.display = "none";
     nextBtn.style.display = "inline-block";
@@ -281,8 +275,6 @@ nextBtn.onclick = function(){
     if(isTyping) return;
 
     index++;
-    updateBackground();
-
     if(index<scenes.length){
         typeWriter(scenes[index]);
     } else {
