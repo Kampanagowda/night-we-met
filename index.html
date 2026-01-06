@@ -107,8 +107,9 @@ like the world was holding its breath.
     <button id="nextBtn">Next</button>
 </div>
 
-<audio src="bgMusic.mp3" controls autoplay>
-<p>Fallback content goes here.</p>
+<!-- Background Music -->
+<audio id="bgMusic" loop preload="auto">
+    <source src="bgMusic.mp3" type="audio/mpeg">
 </audio>
 
 <script>
@@ -132,19 +133,23 @@ const scene = document.getElementById("scene");
 const button = document.getElementById("nextBtn");
 const music = document.getElementById("bgMusic");
 
+// Attempt autoplay on page load
+window.addEventListener("load", () => {
+    music.volume = 0.4;
+    music.play().then(() => {
+        musicStarted = true;
+        console.log("Music autoplayed successfully.");
+    }).catch(() => {
+        console.log("Autoplay blocked. Will play on first click.");
+    });
+});
+
+// Click handler for Next button
 button.addEventListener("click", () => {
 
-    // Start music ONLY once, after user interaction
+    // If autoplay was blocked, start music on first click
     if (!musicStarted) {
-        music.volume = 0.4;
-        const playPromise = music.play();
-
-        if (playPromise !== undefined) {
-            playPromise.catch(err => {
-                console.log("Audio blocked:", err);
-            });
-        }
-
+        music.play().catch(err => console.log(err));
         musicStarted = true;
     }
 
@@ -165,17 +170,11 @@ button.addEventListener("click", () => {
     }
 });
 
+// Rose animation
 function releaseRoses() {
     for (let i = 0; i < 20; i++) {
         const rose = document.createElement("div");
         rose.className = "rose";
         rose.innerText = "🌹";
         rose.style.left = Math.random() * 100 + "vw";
-        rose.style.animationDuration = (4 + Math.random() * 4) + "s";
-        document.body.appendChild(rose);
-    }
-}
-</script>
-
-</body>
-</html>
+        rose.style.animationDurat
