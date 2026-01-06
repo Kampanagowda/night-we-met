@@ -238,7 +238,7 @@ function typeWriter(text, i=0){
         typeInterval = setInterval(()=>{
             typeSound.currentTime = 0;
             typeSound.play().catch(()=>{});
-        }, 500);
+        }, 300);
     }
 
     if(i<text.length){
@@ -269,7 +269,7 @@ overlay.onclick = function(){
     nextBtn.style.display = "inline-block";
 
     // Play music starting at 30s
-    music.currentTime = 10;
+    music.currentTime = 20;
     music.volume = 0.4;
     music.play().catch(e=>console.log(e));
 
