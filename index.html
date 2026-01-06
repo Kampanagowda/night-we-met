@@ -70,12 +70,8 @@
         animation: pulse 4s infinite alternate;
     }
     .moon::after {
-        content:'';
-        position:absolute;
-        top:-8px; left:-15px;
-        width:70px; height:70px;
-        background:#020107;
-        border-radius:50%;
+        content:''; position:absolute; top:-8px; left:-15px;
+        width:70px; height:70px; background:#020107; border-radius:50%;
     }
     @keyframes pulse {
         from { box-shadow: 0 0 40px 10px rgba(254,252,215,0.2); }
@@ -158,7 +154,6 @@
         20% { opacity: 1; }
         100% { transform: translateY(-115vh) rotate(720deg); opacity: 0; }
     }
-
 </style>
 </head>
 <body>
@@ -183,8 +178,8 @@
 <script>
 const scenes = [
     "I was wearing a black jacket and black jeans.\nCalm. Quiet.\nOh!!Bold as well.",
-    "And then there he was…\nStanding near the bus stand.\nHands folded.",
-    "A black racer bike beside him.\nThat quiet confidence.",
+    "And then there he was…\nA tall masculine guy.\nStanding near the bus stand.\nHands folded.",
+    "A black bike beside him.\nHelmet in his hand.",
     "The night stayed silent.\nBut somehow… everything felt loud.",
     "He stepped closer and said:\n\"Hey, I brought you something.\"",
     "Three red roses. 🌹🌹🌹",
@@ -192,6 +187,20 @@ const scenes = [
     "The night didn’t know it was special.",
     "But we did.",
     "That was the beginning.\nA memory that still feels warm."
+];
+
+// Playful button texts
+const buttonTexts = [
+    " Reveal More ",
+    " Next Scene ",
+    " Keep Unfolding ",
+    "What Happens Next?",
+    " See More ",
+    " Continue ",
+    " Keep Going ",
+    " More Magic ",
+    " Next Memory ",
+    "💖 And the Story continues.. 💖"
 ];
 
 let index = 0;
@@ -230,7 +239,7 @@ function startShootingStars() {
     setInterval(()=>{ if(Math.random()<0.9) createShootingStar(); }, 600);
 }
 
-// Typewriter effect (clean)
+// Typewriter effect
 function typeWriter(text, i=0){
     if(i===0){
         sceneDiv.innerHTML = "";
@@ -244,6 +253,8 @@ function typeWriter(text, i=0){
     } else {
         isTyping = false;
         nextBtn.disabled = false;
+        // Update button text
+        if(index < buttonTexts.length) nextBtn.innerText = buttonTexts[index];
     }
 }
 
@@ -275,7 +286,7 @@ nextBtn.onclick = function(){
     if(isTyping) return;
 
     index++;
-    if(index<scenes.length){
+    if(index < scenes.length){
         typeWriter(scenes[index]);
     } else {
         nextBtn.style.display = "none";
