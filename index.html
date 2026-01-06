@@ -17,7 +17,7 @@
         justify-content: center;
         text-align: center;
         background: linear-gradient(to bottom, #020107 0%, #13112b 100%);
-        transition: background 5s ease;
+        transition: background 3s ease;
     }
 
     /* Stars */
@@ -93,6 +93,12 @@
         color: #ffffff;
         text-shadow: 0 0 15px rgba(255,255,255,0.5);
         font-style: italic;
+        animation: glow 3s infinite alternate;
+    }
+
+    @keyframes glow {
+        from { text-shadow: 0 0 10px rgba(255,255,255,0.3); }
+        to { text-shadow: 0 0 25px rgba(255,255,255,0.8); }
     }
 
     button {
@@ -165,17 +171,14 @@
     <button id="nextBtn">Next</button>
 </div>
 
-<!-- Background music starting at 0:30 -->
+<!-- Background music starting at 30s -->
 <audio id="bgMusic" loop>
     <source src="bgMusic.mp3" type="audio/mpeg">
 </audio>
 
-<!-- Typewriter soft click -->
-<audio id="typeSound" src="type-sound.mp3" preload="auto"></audio>
-
 <script>
 const scenes = [
-    "I was wearing a black jacket and black jeans.\nCalm. Quiet. Fearless.\nOh!! Bold as well.",
+    "I was wearing a black jacket and black jeans.\nCalm. Quiet.\nOh!!Bold as well.",
     "And then there he was…\nStanding near the bus stand.\nHands folded.",
     "A black racer bike beside him.\nThat quiet confidence.",
     "The night stayed silent.\nBut somehow… everything felt loud.",
@@ -193,12 +196,10 @@ const sceneDiv = document.getElementById("scene");
 const nextBtn = document.getElementById("nextBtn");
 const overlay = document.getElementById("overlay");
 const music = document.getElementById("bgMusic");
-const typeSound = document.getElementById("typeSound");
-let typeInterval;
 
 // Stars
 const starfield = document.getElementById("starfield");
-for (let i = 0; i < 80; i++) {
+for (let i = 0; i < 100; i++) {
     const star = document.createElement("div");
     star.className = "star";
     const size = Math.random() * 3 + "px";
@@ -222,32 +223,21 @@ function createShootingStar() {
     setTimeout(()=>star.remove(),2000);
 }
 function startShootingStars() {
-    setInterval(()=>{
-        if(Math.random()<0.7) createShootingStar();
-    },1500);
+    setInterval(()=>{ if(Math.random()<0.9) createShootingStar(); }, 800);
 }
 
-// Typewriter effect with soft looping click
+// Typewriter text effect (no sound)
 function typeWriter(text, i=0){
     if(i===0){
         sceneDiv.innerHTML = "";
         isTyping = true;
         nextBtn.disabled = true;
-
-        // Start typewriter click every 0.5s
-        typeInterval = setInterval(()=>{
-            typeSound.currentTime = 0;
-            typeSound.play().catch(()=>{});
-        }, 20);
     }
-
     if(i<text.length){
         if(text.charAt(i) === "\n") sceneDiv.innerHTML += "<br>";
         else sceneDiv.innerHTML += text.charAt(i);
-
-        setTimeout(()=>typeWriter(text, i+1), 50);
+        setTimeout(()=>typeWriter(text, i+1), 40);
     } else {
-        clearInterval(typeInterval);
         isTyping = false;
         nextBtn.disabled = false;
     }
@@ -263,13 +253,22 @@ function createRose(){
     setTimeout(()=>rose.remove(),7000);
 }
 
+// Background colors for night-to-dawn
+const bgColors = [
+  '#020107', '#10051a', '#2b1640', '#40306a', '#5a4a9b'
+];
+
+function updateBackground() {
+    const step = Math.min(index, bgColors.length-1);
+    document.body.style.background = `linear-gradient(to bottom, ${bgColors[step]} 0%, #13112b 100%)`;
+}
+
 // Overlay click starts everything
 overlay.onclick = function(){
     overlay.style.display = "none";
     nextBtn.style.display = "inline-block";
 
-    // Play music starting at 30s
-    music.currentTime = 20;
+    music.currentTime = 30;
     music.volume = 0.4;
     music.play().catch(e=>console.log(e));
 
@@ -282,6 +281,8 @@ nextBtn.onclick = function(){
     if(isTyping) return;
 
     index++;
+    updateBackground();
+
     if(index<scenes.length){
         typeWriter(scenes[index]);
     } else {
