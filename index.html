@@ -8,53 +8,103 @@
     body {
         margin: 0;
         height: 100vh;
-        background: #000; /* Solid black for reliability */
-        font-family: serif;
+        background: linear-gradient(to bottom, #020107 0%, #13112b 100%);
+        font-family: 'Georgia', serif;
         color: #f5f5f5;
         display: flex;
         flex-direction: column;
         align-items: center;
         justify-content: center;
         text-align: center;
+        padding: 20px;
         overflow: hidden;
     }
 
-    /* Simple star background */
-    .stars {
+    /* Shimmering Stars */
+    .star-layer {
         position: fixed;
         inset: 0;
-        background-image: radial-gradient(#555 1px, transparent 1px);
-        background-size: 50px 50px;
-        opacity: 0.3;
+        pointer-events: none;
+        z-index: 0;
+    }
+
+    .star {
+        position: absolute;
+        background: white;
+        border-radius: 50%;
+        opacity: 0.5;
+        animation: shimmer var(--duration) infinite alternate;
+    }
+
+    @keyframes shimmer {
+        from { opacity: 0.2; transform: scale(0.8); }
+        to { opacity: 0.8; transform: scale(1.2); }
+    }
+
+    /* Glowing Moon */
+    .moon {
+        position: absolute;
+        top: 40px;
+        right: 40px;
+        width: 70px;
+        height: 70px;
+        background: #fefcd7;
+        border-radius: 50%;
+        box-shadow: 0 0 50px 15px rgba(254, 252, 215, 0.3);
         z-index: 1;
+    }
+    .moon::after {
+        content: '';
+        position: absolute;
+        top: -8px;
+        left: -15px;
+        width: 70px;
+        height: 70px;
+        background: #020107;
+        border-radius: 50%;
     }
 
     .container {
         position: relative;
         z-index: 10;
-        width: 80%;
-        max-width: 600px;
+        width: 100%;
+        max-width: 650px;
     }
 
     #scene {
-        font-size: 1.5rem;
-        line-height: 1.6;
+        font-size: 1.6rem;
+        line-height: 1.9;
+        min-height: 150px;
         margin-bottom: 40px;
-        min-height: 100px;
-        /* Removed all opacity:0 and transitions to ensure visibility */
-        color: #ffffff; 
-        display: block; 
+        color: #ffffff;
+        text-shadow: 0 0 15px rgba(255, 255, 255, 0.5);
+        font-style: italic;
     }
 
     button {
-        padding: 15px 40px;
-        background: none;
+        padding: 14px 40px;
+        background: rgba(255, 77, 109, 0.05);
         color: #ff4d6d;
-        border: 2px solid #ff4d6d;
-        border-radius: 50px;
+        border: 1px solid #ff4d6d;
+        border-radius: 40px;
         font-size: 1.1rem;
         cursor: pointer;
-        display: none; /* Hidden until start */
+        transition: all 0.4s ease;
+        display: none;
+        letter-spacing: 1px;
+    }
+
+    button:hover:not(:disabled) {
+        background: #ff4d6d;
+        color: #000;
+        box-shadow: 0 0 30px #ff4d6d;
+        transform: translateY(-2px);
+    }
+
+    button:disabled {
+        border-color: #555;
+        color: #555;
+        cursor: default;
     }
 
     #overlay {
@@ -74,21 +124,25 @@
         position: absolute;
         bottom: -50px;
         font-size: 2rem;
-        animation: floatUp 5s linear infinite;
+        animation: floatUp 7s ease-in forwards;
+        z-index: 5;
     }
 
     @keyframes floatUp {
-        to { transform: translateY(-110vh) rotate(360deg); }
+        0% { transform: translateY(0) rotate(0deg); opacity: 0; }
+        20% { opacity: 1; }
+        100% { transform: translateY(-115vh) rotate(720deg); opacity: 0; }
     }
 </style>
 </head>
 <body>
 
-<div class="stars"></div>
+<div class="star-layer" id="starfield"></div>
+<div class="moon"></div>
 
 <div id="overlay">
-    <h1>Click here to begin</h1>
-    <p>(Music will play)</p>
+    <h1 style="font-weight: 300; letter-spacing: 2px;">Begin the memory...</h1>
+    <p style="opacity: 0.6;">(Tap anywhere)</p>
 </div>
 
 <div class="container">
@@ -115,46 +169,74 @@ const scenes = [
 ];
 
 let index = 0;
+let isTyping = false;
 const sceneDiv = document.getElementById("scene");
 const nextBtn = document.getElementById("nextBtn");
 const overlay = document.getElementById("overlay");
 const music = document.getElementById("bgMusic");
 
-// Start logic
+// Generate stars
+const starfield = document.getElementById("starfield");
+for (let i = 0; i < 80; i++) {
+    const star = document.createElement("div");
+    star.className = "star";
+    const size = Math.random() * 3 + "px";
+    star.style.width = size;
+    star.style.height = size;
+    star.style.top = Math.random() * 100 + "vh";
+    star.style.left = Math.random() * 100 + "vw";
+    star.style.setProperty('--duration', (2 + Math.random() * 4) + 's');
+    starfield.appendChild(star);
+}
+
+function typeWriter(text, i = 0) {
+    if (i === 0) {
+        sceneDiv.innerHTML = "";
+        isTyping = true;
+        nextBtn.disabled = true;
+    }
+
+    if (i < text.length) {
+        if (text.charAt(i) === "\n") {
+            sceneDiv.innerHTML += "<br>";
+        } else {
+            sceneDiv.innerHTML += text.charAt(i);
+        }
+        setTimeout(() => typeWriter(text, i + 1), 60); // 60ms is the sweet spot
+    } else {
+        isTyping = false;
+        nextBtn.disabled = false;
+    }
+}
+
 overlay.onclick = function() {
     overlay.style.display = "none";
     nextBtn.style.display = "inline-block";
-    
-    // Play Music
-    music.volume = 0.5;
+    music.volume = 0.4;
     music.play().catch(e => console.log("Music error:", e));
-
-    // Show first text immediately
-    sceneDiv.innerText = scenes[0];
+    typeWriter(scenes[index]);
 };
 
-// Button logic
 nextBtn.onclick = function() {
+    if (isTyping) return;
+    
     index++;
     if (index < scenes.length) {
-        sceneDiv.innerText = scenes[index];
+        typeWriter(scenes[index]);
     } else {
         nextBtn.style.display = "none";
-        sceneDiv.innerHTML = "And if fate asks me again…<br>I’d still meet you.<br>Same night. Same darkness. Same roses. ❤️";
-        releaseRoses();
+        typeWriter("And if fate asks me again…\nI’d still meet you.\nSame night. Same darkness. Same roses. ❤️");
+        setInterval(createRose, 400);
     }
 };
 
-function releaseRoses() {
-    for (let i = 0; i < 15; i++) {
-        setTimeout(() => {
-            const rose = document.createElement("div");
-            rose.className = "rose";
-            rose.innerText = "🌹";
-            rose.style.left = Math.random() * 100 + "vw";
-            document.body.appendChild(rose);
-        }, i * 200);
-    }
+function createRose() {
+    const rose = document.createElement("div");
+    rose.className = "rose";
+    rose.innerText = "🌹";
+    rose.style.left = Math.random() * 100 + "vw";
+    document.body.appendChild(rose);
+    setTimeout(() => rose.remove(), 7000);
 }
 </script>
 
