@@ -3,7 +3,6 @@
 <head>
 <meta charset="UTF-8">
 <title>The Night We Met</title>
-
 <style>
     body {
         margin: 0;
@@ -80,30 +79,38 @@
     }
 
     @keyframes floatUp {
-        from {
-            transform: translateY(0) rotate(0deg);
-            opacity: 0;
-        }
-        to {
-            transform: translateY(-120vh) rotate(360deg);
-            opacity: 1;
-        }
+        from { transform: translateY(0) rotate(0deg); opacity: 0; }
+        to { transform: translateY(-120vh) rotate(360deg); opacity: 1; }
+    }
+
+    /* Overlay styles */
+    #overlay {
+        position: fixed;
+        inset: 0;
+        background: rgba(0,0,0,0.95);
+        color: #ff4d6d;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        flex-direction: column;
+        z-index: 9999;
+        font-size: 1.5rem;
+        cursor: pointer;
+        text-align: center;
+    }
+    #overlay h1 {
+        margin-bottom: 20px;
     }
 </style>
 </head>
-
 <body>
 
 <div class="stars"></div>
 
 <div class="container">
-    <div id="scene" class="text show">
-It was 1:00 AM.  
-A quiet bus stand.  
-So dark… so still…  
-like the world was holding its breath.
+    <div id="scene" class="text">
+        <!-- First scene appears after click -->
     </div>
-
     <button id="nextBtn">Next</button>
 </div>
 
@@ -111,6 +118,12 @@ like the world was holding its breath.
 <audio id="bgMusic" loop preload="auto">
     <source src="bgMusic.mp3" type="audio/mpeg">
 </audio>
+
+<!-- Click overlay -->
+<div id="overlay">
+    <h1>Click anywhere to start the night…</h1>
+    <p>Music will play automatically</p>
+</div>
 
 <script>
 const scenes = [
@@ -132,29 +145,30 @@ let musicStarted = false;
 const scene = document.getElementById("scene");
 const button = document.getElementById("nextBtn");
 const music = document.getElementById("bgMusic");
+const overlay = document.getElementById("overlay");
 
-// Attempt autoplay on page load
-window.addEventListener("load", () => {
-    music.volume = 0.4;
-    music.play().then(() => {
-        musicStarted = true;
-        console.log("Music autoplayed successfully.");
-    }).catch(() => {
-        console.log("Autoplay blocked. Will play on first click.");
-    });
-});
+// Hide text initially
+scene.style.opacity = 0;
 
-// Click handler for Next button
-button.addEventListener("click", () => {
+// Overlay click -> start everything
+overlay.addEventListener("click", () => {
+    overlay.style.display = "none";
 
-    // If autoplay was blocked, start music on first click
+    // Play music
     if (!musicStarted) {
-        music.play().catch(err => console.log(err));
+        music.volume = 0.4;
+        music.play().catch(err => console.log("Autoplay blocked", err));
         musicStarted = true;
     }
 
-    index++;
+    // Show first scene
+    scene.innerText = scenes[index];
+    scene.classList.add("show");
+});
 
+// Next button click
+button.addEventListener("click", () => {
+    index++;
     if (index < scenes.length) {
         scene.classList.remove("show");
         setTimeout(() => {
@@ -182,6 +196,5 @@ function releaseRoses() {
     }
 }
 </script>
-
 </body>
 </html>
