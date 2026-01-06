@@ -245,7 +245,7 @@ function typeWriter(text, i=0){
         if(text.charAt(i) === "\n") sceneDiv.innerHTML += "<br>";
         else sceneDiv.innerHTML += text.charAt(i);
 
-        setTimeout(()=>typeWriter(text, i+1), 100);
+        setTimeout(()=>typeWriter(text, i+1), 50);
     } else {
         clearInterval(typeInterval);
         isTyping = false;
@@ -269,7 +269,7 @@ overlay.onclick = function(){
     nextBtn.style.display = "inline-block";
 
     // Play music starting at 30s
-    music.currentTime = 1;
+    music.currentTime = 10;
     music.volume = 0.4;
     music.play().catch(e=>console.log(e));
 
