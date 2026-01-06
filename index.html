@@ -21,6 +21,7 @@
         background-size: 3px 3px;
         opacity: 0.35;
         animation: twinkle 6s infinite alternate;
+        pointer-events: none;
     }
 
     @keyframes twinkle {
@@ -75,6 +76,7 @@
         font-size: 2rem;
         animation: floatUp linear infinite;
         opacity: 0.8;
+        pointer-events: none;
     }
 
     @keyframes floatUp {
@@ -106,8 +108,9 @@ like the world was holding its breath.
 </div>
 
 <!-- 🎵 Background Music -->
-<audio id="bgMusic" loop>
-    <source src="night-we-met.mp3" type="audio/mpeg">
+<audio id="bgMusic" preload="auto" loop>
+    <source src="bg-music.mp3" type="audio/mpeg">
+    Your browser does not support audio.
 </audio>
 
 <script>
@@ -133,10 +136,17 @@ const music = document.getElementById("bgMusic");
 
 button.addEventListener("click", () => {
 
-    // Start music on first click
+    // Start music ONLY once, after user interaction
     if (!musicStarted) {
         music.volume = 0.4;
-        music.play();
+        const playPromise = music.play();
+
+        if (playPromise !== undefined) {
+            playPromise.catch(err => {
+                console.log("Audio blocked:", err);
+            });
+        }
+
         musicStarted = true;
     }
 
