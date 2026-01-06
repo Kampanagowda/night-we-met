@@ -168,7 +168,7 @@
 
 <div class="container">
     <div id="scene"></div>
-    <button id="nextBtn"> One Night... </button>
+    <button id="nextBtn"> ... </button>
 </div>
 
 <audio id="bgMusic" loop>
@@ -273,7 +273,7 @@ overlay.onclick = function(){
     overlay.style.display = "none";
     nextBtn.style.display = "inline-block";
 
-    music.currentTime = 30;
+    music.currentTime = 5;
     music.volume = 0.4;
     music.play().catch(e=>console.log(e));
 
