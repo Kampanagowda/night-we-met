@@ -6,47 +6,40 @@
 <title>The Night We Met</title>
 <style>
 body {
-    margin: 0;
-    height: 100vh;
-    background: linear-gradient(to bottom, #020107 0%, #13112b 100%);
-    font-family: 'Georgia', serif;
-    color: #ffffff;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
-    text-align: center;
-    padding: 20px;
-    overflow: hidden;
+    margin:0;
+    padding:0;
+    height:100vh;
+    font-family:'Georgia', serif;
+    background:linear-gradient(to bottom,#020107 0%,#13112b 100%);
+    color:#fff;
+    overflow:hidden;
+    display:flex;
+    justify-content:center;
+    align-items:center;
+    flex-direction:column;
 }
 
-.star-layer { position: fixed; inset: 0; pointer-events: none; z-index: 0; }
-.star { position: absolute; background: white; border-radius: 50%; opacity: 0.5; animation: shimmer var(--duration) infinite alternate; }
-@keyframes shimmer { from { opacity:0.2; transform:scale(0.8); } to { opacity:0.8; transform:scale(1.2); } }
+/* Stars */
+.star-layer{position:fixed;inset:0;pointer-events:none;z-index:0;}
+.star{position:absolute;background:#fff;border-radius:50%;opacity:0.5;animation: shimmer var(--duration) infinite alternate;}
+@keyframes shimmer{from{opacity:0.2;transform:scale(0.8);}to{opacity:0.8;transform:scale(1.2);}}
 
-.moon { position: absolute; top:40px; right:40px; width:70px; height:70px; background:#fefcd7; border-radius:50%; box-shadow:0 0 50px 15px rgba(254,252,215,0.3); z-index:1; }
-.moon::after { content:''; position:absolute; top:-8px; left:-15px; width:70px; height:70px; background:#020107; border-radius:50%; }
+/* Moon */
+.moon{position:absolute;top:40px;right:40px;width:70px;height:70px;background:#fefcd7;border-radius:50%;box-shadow:0 0 50px 15px rgba(254,252,215,0.3);z-index:1;}
+.moon::after{content:'';position:absolute;top:-8px;left:-15px;width:70px;height:70px;background:#020107;border-radius:50%;}
 
-.container { position: relative; z-index:10; width:100%; max-width:650px; }
+/* Container */
+.container{position:relative;z-index:10;width:100%;max-width:650px;text-align:center;}
+#scene{font-size:1.6rem;line-height:1.9;min-height:150px;text-shadow:0 0 15px rgba(255,255,255,0.5);font-style:italic;}
+button{padding:14px 40px;background:rgba(255,77,109,0.05);color:#ff4d6d;border:1px solid #ff4d6d;border-radius:40px;font-size:1.1rem;cursor:pointer;transition:all 0.4s ease;display:none;}
+button:hover{background:#ff4d6d;color:#000;box-shadow:0 0 30px #ff4d6d;transform:translateY(-2px);}
 
-#scene {
-    font-size: 1.6rem; line-height:1.9; min-height:150px; margin-bottom:40px;
-    color:#ffffff; text-shadow:0 0 15px rgba(255,255,255,0.5); font-style:italic;
-}
+/* Overlay */
+#overlay{position:fixed;inset:0;background:#000;color:#ff4d6d;display:flex;flex-direction:column;align-items:center;justify-content:center;z-index:100;cursor:pointer;}
 
-button {
-    padding: 14px 40px; background: rgba(255,77,109,0.05);
-    color: #ff4d6d; border: 1px solid #ff4d6d; border-radius: 40px;
-    font-size:1.1rem; cursor:pointer; transition: all 0.4s ease;
-    display:none; letter-spacing:1px;
-}
-button:hover:not(:disabled) { background:#ff4d6d; color:#000; box-shadow:0 0 30px #ff4d6d; transform: translateY(-2px); }
-button:disabled { border-color:#555; color:#555; cursor:default; }
-
-#overlay { position: fixed; inset:0; background:#000; color:#ff4d6d; display:flex; flex-direction:column; align-items:center; justify-content:center; z-index:100; cursor:pointer; }
-
-.rose { position:absolute; bottom:-50px; font-size:2rem; animation: floatUp 7s ease-in forwards; z-index:5; }
-@keyframes floatUp { 0%{transform:translateY(0) rotate(0deg); opacity:0;} 20%{opacity:1;} 100%{transform:translateY(-115vh) rotate(720deg); opacity:0;} }
+/* Roses */
+.rose{position:absolute;bottom:-50px;font-size:2rem;animation:floatUp 7s ease-in forwards;z-index:5;}
+@keyframes floatUp{0%{transform:translateY(0) rotate(0deg);opacity:0;}20%{opacity:1;}100%{transform:translateY(-115vh) rotate(720deg);opacity:0;}}
 </style>
 </head>
 <body>
@@ -55,17 +48,17 @@ button:disabled { border-color:#555; color:#555; cursor:default; }
 <div class="moon"></div>
 
 <div id="overlay">
-    <h1 style="font-weight:300; letter-spacing:2px;">Begin the memory...</h1>
-    <p style="opacity:0.6;">(Tap anywhere)</p>
+<h1 style="font-weight:300;letter-spacing:2px;">Begin the memory...</h1>
+<p style="opacity:0.6;">(Tap anywhere)</p>
 </div>
 
 <div class="container">
-    <div id="scene"></div>
-    <button id="nextBtn">Next</button>
+<div id="scene"></div>
+<button id="nextBtn">Next</button>
 </div>
 
 <audio id="bgMusic" loop>
-    <source src="bgMusic.mp3" type="audio/mpeg">
+<source src="bgMusic.mp3" type="audio/mpeg">
 </audio>
 
 <script>
@@ -89,13 +82,14 @@ const nextBtn = document.getElementById("nextBtn");
 const overlay = document.getElementById("overlay");
 const music = document.getElementById("bgMusic");
 
-// Generate stars
+// Create stars
 const starfield = document.getElementById("starfield");
 for(let i=0;i<80;i++){
     const star=document.createElement("div");
     star.className="star";
     const size=Math.random()*3+"px";
-    star.style.width=size; star.style.height=size;
+    star.style.width=size;
+    star.style.height=size;
     star.style.top=Math.random()*100+"vh";
     star.style.left=Math.random()*100+"vw";
     star.style.setProperty('--duration',(2+Math.random()*4)+'s');
@@ -105,10 +99,10 @@ for(let i=0;i<80;i++){
 function typeWriter(text,i=0){
     if(i===0){ sceneDiv.innerHTML=""; isTyping=true; nextBtn.disabled=true;}
     if(i<text.length){
-        if(text.charAt(i)==="\n"){ sceneDiv.innerHTML+="<br>"; }
-        else{ sceneDiv.innerHTML+=text.charAt(i);}
-        setTimeout(()=>typeWriter(text,i+1),60);
-    }else{ isTyping=false; nextBtn.disabled=false;}
+        if(text.charAt(i)==="\n"){ sceneDiv.innerHTML+="<br>";}
+        else{sceneDiv.innerHTML+=text.charAt(i);}
+        setTimeout(()=>typeWriter(text,i+1),50);
+    }else{isTyping=false; nextBtn.disabled=false;}
 }
 
 // Overlay click
@@ -133,7 +127,7 @@ nextBtn.onclick=function(){
     }
 }
 
-// Rose function
+// Roses
 function createRose(){
     const rose=document.createElement("div");
     rose.className="rose";
@@ -143,6 +137,5 @@ function createRose(){
     setTimeout(()=>rose.remove(),7000);
 }
 </script>
-
 </body>
 </html>
