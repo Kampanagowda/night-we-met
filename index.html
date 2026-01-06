@@ -252,16 +252,16 @@ function typeWriter(text, i=0){
         setTimeout(()=>typeWriter(text, i+1), 40);
     } else {
         isTyping = false;
-        // Show button only if NOT the final text
-        if(index < scenes.length - 1) {
-            // special case: last scene before final
-            if(index === scenes.length - 1){
-                nextBtn.style.display = "inline-block"; 
-                nextBtn.innerText = buttonTexts[scenes.length-1]; // 💖 And the Story continues.. 💖
-            } else {
-                nextBtn.style.display = "inline-block"; 
-                nextBtn.innerText = buttonTexts[index];
-            }
+
+        // Last scene before final button
+        if(index === scenes.length - 1){
+            nextBtn.style.display = "inline-block";
+            nextBtn.innerText = buttonTexts[scenes.length-1]; // 💖 And the Story continues.. 💖
+        }
+        // All other normal scenes
+        else if(index < scenes.length - 1){
+            nextBtn.style.display = "inline-block";
+            nextBtn.innerText = buttonTexts[index];
         }
     }
 }
@@ -293,14 +293,14 @@ overlay.onclick = function(){
 nextBtn.onclick = function(){
     if(isTyping) return;
 
-    index++;
-    if(index < scenes.length){
-        typeWriter(scenes[index]);
-    } else {
-        // final text
+    // Last button clicked -> show final text
+    if(index === scenes.length - 1){
         nextBtn.style.display = "none";
         typeWriter("And if fate asks me again…\nI’d still meet you.\nSame night. Same darkness. Same roses. ❤️");
         setInterval(createRose, 400);
+    } else {
+        index++;
+        typeWriter(scenes[index]);
     }
 };
 </script>
