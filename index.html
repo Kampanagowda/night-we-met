@@ -8,122 +8,97 @@
     body {
         margin: 0;
         height: 100vh;
-        background: radial-gradient(circle at top, #111 0%, #000 70%);
-        font-family: 'Georgia', serif;
+        background: #000; /* Solid black for reliability */
+        font-family: serif;
         color: #f5f5f5;
-        overflow: hidden;
         display: flex;
+        flex-direction: column;
         align-items: center;
         justify-content: center;
+        text-align: center;
+        overflow: hidden;
     }
 
+    /* Simple star background */
     .stars {
         position: fixed;
         inset: 0;
         background-image: radial-gradient(#555 1px, transparent 1px);
-        background-size: 3px 3px;
-        opacity: 0.35;
-        animation: twinkle 6s infinite alternate;
-        pointer-events: none;
+        background-size: 50px 50px;
+        opacity: 0.3;
         z-index: 1;
-    }
-
-    @keyframes twinkle {
-        from { opacity: 0.2; }
-        to { opacity: 0.5; }
     }
 
     .container {
         position: relative;
         z-index: 10;
-        max-width: 720px;
-        width: 90%;
-        text-align: center;
-        padding: 20px;
+        width: 80%;
+        max-width: 600px;
     }
 
-    .text {
-        font-size: 1.35rem;
-        line-height: 1.9;
-        white-space: pre-line;
-        min-height: 150px; /* Prevents layout jump */
-        opacity: 0;
-        transition: opacity 0.8s ease-in-out;
-    }
-
-    .text.show {
-        opacity: 1;
+    #scene {
+        font-size: 1.5rem;
+        line-height: 1.6;
+        margin-bottom: 40px;
+        min-height: 100px;
+        /* Removed all opacity:0 and transitions to ensure visibility */
+        color: #ffffff; 
+        display: block; 
     }
 
     button {
-        margin-top: 35px;
-        padding: 12px 30px;
-        background: transparent;
+        padding: 15px 40px;
+        background: none;
         color: #ff4d6d;
         border: 2px solid #ff4d6d;
-        border-radius: 30px;
-        font-size: 1rem;
+        border-radius: 50px;
+        font-size: 1.1rem;
         cursor: pointer;
-        transition: all 0.3s ease;
-        display: none; /* Hidden until overlay is clicked */
-    }
-
-    button:hover {
-        background: #ff4d6d;
-        color: #000;
-        box-shadow: 0 0 20px #ff4d6d;
-    }
-
-    .rose {
-        position: absolute;
-        bottom: -60px;
-        font-size: 2rem;
-        animation: floatUp linear infinite;
-        opacity: 0.8;
-        pointer-events: none;
-        z-index: 5;
-    }
-
-    @keyframes floatUp {
-        from { transform: translateY(0) rotate(0deg); opacity: 0; }
-        to { transform: translateY(-120vh) rotate(360deg); opacity: 1; }
+        display: none; /* Hidden until start */
     }
 
     #overlay {
         position: fixed;
         inset: 0;
-        background: rgba(0,0,0,0.95);
+        background: #000;
         color: #ff4d6d;
         display: flex;
+        flex-direction: column;
         align-items: center;
         justify-content: center;
-        flex-direction: column;
-        z-index: 9999;
-        font-size: 1.5rem;
+        z-index: 100;
         cursor: pointer;
-        text-align: center;
     }
-    #overlay h1 { margin-bottom: 20px; font-size: 1.8rem; }
-    #overlay p { font-size: 1rem; color: #ccc; }
+
+    .rose {
+        position: absolute;
+        bottom: -50px;
+        font-size: 2rem;
+        animation: floatUp 5s linear infinite;
+    }
+
+    @keyframes floatUp {
+        to { transform: translateY(-110vh) rotate(360deg); }
+    }
 </style>
 </head>
 <body>
 
 <div class="stars"></div>
 
+<div id="overlay">
+    <h1>Click here to begin</h1>
+    <p>(Music will play)</p>
+</div>
+
 <div class="container">
-    <div id="scene" class="text"></div>
+    <div id="scene"></div>
     <button id="nextBtn">Next</button>
 </div>
 
-<audio id="bgMusic" loop preload="auto">
+<audio id="bgMusic" loop>
     <source src="bgMusic.mp3" type="audio/mpeg">
 </audio>
-
-<div id="overlay">
-    <h1>Click anywhere to start the night…</h1>
-    <p>Music will play automatically</p>
-</div>
 
 <script>
 const scenes = [
@@ -140,63 +115,48 @@ const scenes = [
 ];
 
 let index = 0;
-const sceneElement = document.getElementById("scene");
-const button = document.getElementById("nextBtn");
-const music = document.getElementById("bgMusic");
+const sceneDiv = document.getElementById("scene");
+const nextBtn = document.getElementById("nextBtn");
 const overlay = document.getElementById("overlay");
+const music = document.getElementById("bgMusic");
 
-// Function to update text with a fade effect
-function updateScene() {
-    sceneElement.classList.remove("show");
-    
-    setTimeout(() => {
-        sceneElement.innerText = scenes[index];
-        sceneElement.classList.add("show");
-    }, 400); // Wait for fade out before changing text
-}
-
-// Start Interaction
-overlay.addEventListener("click", () => {
+// Start logic
+overlay.onclick = function() {
     overlay.style.display = "none";
-    button.style.display = "inline-block"; // Show button now
+    nextBtn.style.display = "inline-block";
+    
+    // Play Music
+    music.volume = 0.5;
+    music.play().catch(e => console.log("Music error:", e));
 
-    // Play music
-    music.volume = 0.4;
-    music.play().catch(err => console.log("Music issue:", err));
+    // Show first text immediately
+    sceneDiv.innerText = scenes[0];
+};
 
-    // Show the first scene immediately
-    sceneElement.innerText = scenes[index];
-    sceneElement.classList.add("show");
-});
-
-// Next Button logic
-button.addEventListener("click", () => {
+// Button logic
+nextBtn.onclick = function() {
     index++;
     if (index < scenes.length) {
-        updateScene();
+        sceneDiv.innerText = scenes[index];
     } else {
-        button.style.display = "none";
-        sceneElement.classList.remove("show");
-        
-        setTimeout(() => {
-            sceneElement.innerText = "And if fate asks me again…\nI’d still meet you.\nSame night. Same darkness. Same roses. ❤️";
-            sceneElement.classList.add("show");
-            releaseRoses();
-        }, 400);
+        nextBtn.style.display = "none";
+        sceneDiv.innerHTML = "And if fate asks me again…<br>I’d still meet you.<br>Same night. Same darkness. Same roses. ❤️";
+        releaseRoses();
     }
-});
+};
 
 function releaseRoses() {
-    for (let i = 0; i < 20; i++) {
-        const rose = document.createElement("div");
-        rose.className = "rose";
-        rose.innerText = "🌹";
-        rose.style.left = Math.random() * 100 + "vw";
-        rose.style.animationDuration = (4 + Math.random() * 4) + "s";
-        rose.style.delay = Math.random() * 2 + "s";
-        document.body.appendChild(rose);
+    for (let i = 0; i < 15; i++) {
+        setTimeout(() => {
+            const rose = document.createElement("div");
+            rose.className = "rose";
+            rose.innerText = "🌹";
+            rose.style.left = Math.random() * 100 + "vw";
+            document.body.appendChild(rose);
+        }, i * 200);
     }
 }
 </script>
+
 </body>
 </html>
