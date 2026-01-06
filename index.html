@@ -102,6 +102,16 @@
         to { text-shadow: 0 0 25px rgba(255,255,255,0.8); }
     }
 
+    /* Sparkle effect for last text */
+    .sparkle {
+        animation: sparkle 1.5s infinite alternate;
+    }
+    @keyframes sparkle {
+        0% { text-shadow: 0 0 10px #ff77aa, 0 0 20px #ff77aa, 0 0 30px #ff77aa; }
+        50% { text-shadow: 0 0 20px #ff99cc, 0 0 30px #ff99cc, 0 0 40px #ff99cc; }
+        100% { text-shadow: 0 0 10px #ff77aa, 0 0 20px #ff77aa, 0 0 30px #ff77aa; }
+    }
+
     button {
         padding: 14px 40px;
         background: rgba(255,77,109,0.05);
@@ -189,7 +199,6 @@ const scenes = [
     "That was the beginning.\nA memory that still feels warm."
 ];
 
-// Playful button texts
 const buttonTexts = [
     " My Gawdd... ",
     " Oh So Handsome😎.. ",
@@ -239,27 +248,23 @@ function startShootingStars() {
     setInterval(()=>{ if(Math.random()<0.9) createShootingStar(); }, 600);
 }
 
-// Typewriter effect
-function typeWriter(text, i=0){
+// Typewriter
+function typeWriter(text, i=0, isFinal=false){
     if(i===0){
         sceneDiv.innerHTML = "";
+        sceneDiv.classList.remove("sparkle");
         isTyping = true;
-        nextBtn.style.display = "none"; // hide button while typing
+        nextBtn.style.display = "none";
     }
     if(i<text.length){
         if(text.charAt(i) === "\n") sceneDiv.innerHTML += "<br>";
         else sceneDiv.innerHTML += text.charAt(i);
-        setTimeout(()=>typeWriter(text, i+1), 40);
+        setTimeout(()=>typeWriter(text, i+1, isFinal), 40);
     } else {
         isTyping = false;
-
-        // Last scene before final button
-        if(index === scenes.length - 1){
-            nextBtn.style.display = "inline-block";
-            nextBtn.innerText = buttonTexts[scenes.length-1]; // 💖 And the Story continues.. 💖
-        }
-        // All other normal scenes
-        else if(index < scenes.length - 1){
+        if(isFinal){
+            sceneDiv.classList.add("sparkle");
+        } else {
             nextBtn.style.display = "inline-block";
             nextBtn.innerText = buttonTexts[index];
         }
@@ -280,11 +285,9 @@ function createRose(){
 overlay.onclick = function(){
     overlay.style.display = "none";
     nextBtn.style.display = "inline-block";
-
     music.currentTime = 5;
     music.volume = 0.4;
     music.play().catch(e=>console.log(e));
-
     typeWriter(scenes[index]);
     startShootingStars();
 };
@@ -293,10 +296,10 @@ overlay.onclick = function(){
 nextBtn.onclick = function(){
     if(isTyping) return;
 
-    // Last button clicked -> show final text
     if(index === scenes.length - 1){
+        // Final text
         nextBtn.style.display = "none";
-        typeWriter("And if fate asks me again…\nI’d still meet you.\nSame night. Same darkness. Same roses. ❤️");
+        typeWriter("And if fate asks me again…\nI’d still meet you.\nSame night. Same darkness. Same roses. ❤️", 0, true);
         setInterval(createRose, 400);
     } else {
         index++;
