@@ -200,7 +200,7 @@ const buttonTexts = [
     " I am going to cry now😭!!!",
     " Awww😚... ",
     " And Next✍️... ",
-    "💖 And the Story continues.. 💖"
+    "💖 And the Story continues.. 💖" // last button
 ];
 
 let index = 0;
@@ -252,9 +252,16 @@ function typeWriter(text, i=0){
         setTimeout(()=>typeWriter(text, i+1), 40);
     } else {
         isTyping = false;
+        // Show button only if NOT the final text
         if(index < scenes.length - 1) {
-            nextBtn.style.display = "inline-block"; 
-            nextBtn.innerText = buttonTexts[index];
+            // special case: last scene before final
+            if(index === scenes.length - 1){
+                nextBtn.style.display = "inline-block"; 
+                nextBtn.innerText = buttonTexts[scenes.length-1]; // 💖 And the Story continues.. 💖
+            } else {
+                nextBtn.style.display = "inline-block"; 
+                nextBtn.innerText = buttonTexts[index];
+            }
         }
     }
 }
@@ -290,6 +297,7 @@ nextBtn.onclick = function(){
     if(index < scenes.length){
         typeWriter(scenes[index]);
     } else {
+        // final text
         nextBtn.style.display = "none";
         typeWriter("And if fate asks me again…\nI’d still meet you.\nSame night. Same darkness. Same roses. ❤️");
         setInterval(createRose, 400);
