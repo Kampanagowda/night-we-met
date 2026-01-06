@@ -252,9 +252,10 @@ function typeWriter(text, i=0){
         setTimeout(()=>typeWriter(text, i+1), 40);
     } else {
         isTyping = false;
-        nextBtn.style.display = "inline-block"; // show button after typing
-        // Update button text
-        if(index < buttonTexts.length) nextBtn.innerText = buttonTexts[index];
+        if(index < scenes.length - 1) {
+            nextBtn.style.display = "inline-block"; 
+            nextBtn.innerText = buttonTexts[index];
+        }
     }
 }
 
