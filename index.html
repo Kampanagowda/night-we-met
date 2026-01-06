@@ -244,7 +244,7 @@ function typeWriter(text, i=0){
     if(i===0){
         sceneDiv.innerHTML = "";
         isTyping = true;
-        nextBtn.disabled = true;
+        nextBtn.style.display = "none"; // hide button while typing
     }
     if(i<text.length){
         if(text.charAt(i) === "\n") sceneDiv.innerHTML += "<br>";
@@ -252,7 +252,7 @@ function typeWriter(text, i=0){
         setTimeout(()=>typeWriter(text, i+1), 40);
     } else {
         isTyping = false;
-        nextBtn.disabled = false;
+        nextBtn.style.display = "inline-block"; // show button after typing
         // Update button text
         if(index < buttonTexts.length) nextBtn.innerText = buttonTexts[index];
     }
