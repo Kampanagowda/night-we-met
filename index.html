@@ -10,19 +10,35 @@ body {
     padding:0;
     height:100vh;
     font-family:'Georgia', serif;
-    background:linear-gradient(to bottom,#020107 0%,#13112b 100%);
     color:#fff;
     overflow:hidden;
     display:flex;
     justify-content:center;
     align-items:center;
     flex-direction:column;
+    background: linear-gradient(to bottom,#020107 0%,#13112b 100%);
+    transition: background 20s linear;
 }
 
-/* Stars */
+/* Star layers */
 .star-layer{position:fixed;inset:0;pointer-events:none;z-index:0;}
 .star{position:absolute;background:#fff;border-radius:50%;opacity:0.5;animation: shimmer var(--duration) infinite alternate;}
 @keyframes shimmer{from{opacity:0.2;transform:scale(0.8);}to{opacity:0.8;transform:scale(1.2);}}
+
+/* Shooting star */
+.shooting-star{
+    position:absolute;
+    width:2px;
+    height:80px;
+    background:white;
+    opacity:0.8;
+    transform: rotate(45deg);
+    animation: shoot linear forwards;
+}
+@keyframes shoot{
+    0% {transform: translate(0,0) rotate(45deg); opacity:1;}
+    100% {transform: translate(800px,400px) rotate(45deg); opacity:0;}
+}
 
 /* Moon */
 .moon{position:absolute;top:40px;right:40px;width:70px;height:70px;background:#fefcd7;border-radius:50%;box-shadow:0 0 50px 15px rgba(254,252,215,0.3);z-index:1;}
@@ -30,7 +46,7 @@ body {
 
 /* Container */
 .container{position:relative;z-index:10;width:100%;max-width:650px;text-align:center;}
-#scene{font-size:1.6rem;line-height:1.9;min-height:150px;text-shadow:0 0 15px rgba(255,255,255,0.5);font-style:italic;}
+#scene{font-size:1.6rem;line-height:1.9;min-height:150px;text-shadow:0 0 15px rgba(255,77,109,0.7);font-style:italic;}
 button{padding:14px 40px;background:rgba(255,77,109,0.05);color:#ff4d6d;border:1px solid #ff4d6d;border-radius:40px;font-size:1.1rem;cursor:pointer;transition:all 0.4s ease;display:none;}
 button:hover{background:#ff4d6d;color:#000;box-shadow:0 0 30px #ff4d6d;transform:translateY(-2px);}
 
@@ -57,11 +73,14 @@ button:hover{background:#ff4d6d;color:#000;box-shadow:0 0 30px #ff4d6d;transform
 <button id="nextBtn">Next</button>
 </div>
 
+<!-- Audio -->
 <audio id="bgMusic" loop>
 <source src="bgMusic.mp3" type="audio/mpeg">
 </audio>
+<audio id="typeSound" src="type-sound.mp3"></audio> <!-- small click type sound effect -->
 
 <script>
+// Scene lines
 const scenes = [
 "You were wearing a black jacket and black jeans.\nCalm. Quiet. Fearless.",
 "And then there he was…\nStanding near the bus stand.\nHands folded.",
@@ -81,6 +100,7 @@ const sceneDiv = document.getElementById("scene");
 const nextBtn = document.getElementById("nextBtn");
 const overlay = document.getElementById("overlay");
 const music = document.getElementById("bgMusic");
+const typeSound = document.getElementById("typeSound");
 
 // Create stars
 const starfield = document.getElementById("starfield");
@@ -96,22 +116,30 @@ for(let i=0;i<80;i++){
     starfield.appendChild(star);
 }
 
+// Typewriter effect with sound
 function typeWriter(text,i=0){
     if(i===0){ sceneDiv.innerHTML=""; isTyping=true; nextBtn.disabled=true;}
     if(i<text.length){
         if(text.charAt(i)==="\n"){ sceneDiv.innerHTML+="<br>";}
-        else{sceneDiv.innerHTML+=text.charAt(i);}
+        else{
+            sceneDiv.innerHTML+=text.charAt(i);
+            typeSound.currentTime=0;
+            typeSound.play();
+        }
         setTimeout(()=>typeWriter(text,i+1),50);
     }else{isTyping=false; nextBtn.disabled=false;}
 }
 
-// Overlay click
+// Overlay click: start everything
 overlay.onclick=function(){
     overlay.style.display="none";
     nextBtn.style.display="inline-block";
     music.volume=0.4;
+    music.currentTime=30; // start from 0:30
     music.play().catch(e=>console.log("Music error:",e));
     typeWriter(scenes[index]);
+    startShootingStars();
+    startDayNightTransition();
 }
 
 // Next button
@@ -135,6 +163,26 @@ function createRose(){
     rose.style.left=Math.random()*100+"vw";
     document.body.appendChild(rose);
     setTimeout(()=>rose.remove(),7000);
+}
+
+// Shooting stars
+function createShootingStar(){
+    const star=document.createElement("div");
+    star.className="shooting-star";
+    star.style.top=Math.random()*50+"vh";
+    star.style.left="-100px";
+    document.body.appendChild(star);
+    setTimeout(()=>star.remove(),2000);
+}
+function startShootingStars(){
+    setInterval(()=>{
+        if(Math.random()<0.3) createShootingStar(); // 30% chance
+    },1500);
+}
+
+// Day/Night transition
+function startDayNightTransition(){
+    document.body.style.background="linear-gradient(to bottom,#0b0a1f 0%,#3a3150 100%)";
 }
 </script>
 </body>
